@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jose's Tennis Challenge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(to bottom, #87CEEB 0%, #98D8C8 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        #gameContainer {
+            position: relative;
+            width: 100vw;
+            max-width: 600px;
+            height: 100vh;
+            max-height: 800px;
+            background: linear-gradient(to bottom, #8FBC8F 0%, #90EE90 50%, #8FBC8F 100%);
+            border: 8px solid #654321;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        #court {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .net {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 4px;
+            background: white;
+            z-index: 5;
+        }
+
+        .net::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 60px;
+            background: white;
+            top: -28px;
+        }
+
+        #scoreboard {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 10;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .score-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+            margin: 5px 0;
+        }
+
+        .player-name {
+            color: #333;
+        }
+
+        .score {
+            color: #FF6B6B;
+            font-size: 22px;
+        }
+
+        .player {
+            position: absolute;
+            width: 55px;
+            height: 75px;
+            z-index: 3;
+        }
+
+        .player-label {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            white-space: nowrap;
+        }
+
+        #paloma {
+            top: 50px;
+            left: 30%;
+        }
+
+        #bharath {
+            top: 50px;
+            right: 30%;
+        }
+
+        #jose {
+            bottom: 50px;
+        }
+
+        .player-body {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .head {
+            position: absolute;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 3px solid #333;
+        }
+
+        .body-part {
+            position: absolute;
+            background: white;
+            border: 3px solid #333;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .torso {
+            width: 30px;
+            height: 35px;
+            top: 32px;
+            border-radius: 10px;
+        }
+
+        .arm {
+            width: 8px;
+            height: 25px;
+            top: 35px;
+            border-radius: 5px;
+        }
+
+        .arm.left {
+            left: 10px;
+            transform: rotate(-20deg);
+        }
+
+        .arm.right {
+            right: 10px;
+            transform: rotate(20deg);
+        }
+
+        .leg {
+            width: 10px;
+            height: 20px;
+            top: 60px;
+            border-radius: 5px;
+        }
+
+        .leg.left {
+            left: 35%;
+        }
+
+        .leg.right {
+            right: 35%;
+        }
+
+        .racket {
+            position: absolute;
+            width: 15px;
+            height: 20px;
+            border: 3px solid #333;
+            border-radius: 50%;
+            background: rgba(255, 200, 0, 0.5);
+            top: 30px;
+        }
+
+        #jose .head {
+            background: #FFD4A3;
+        }
+
+        #jose .torso {
+            background: #4A90E2;
+        }
+
+        #jose .racket {
+            right: -5px;
+        }
+
+        #paloma .head {
+            background: #FFE4C4;
+        }
+
+        #paloma .torso {
+            background: #FF69B4;
+        }
+
+        #paloma .head::after {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 25px;
+            background: #8B4513;
+            border-radius: 50%;
+            top: -5px;
+            left: -2px;
+        }
+
+        #bharath .head {
+            background: #D2A679;
+        }
+
+        #bharath .torso {
+            background: #32CD32;
+        }
+
+        #ball {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #FFFF00;
+            border-radius: 50%;
+            border: 2px solid #FFD700;
+            z-index: 4;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            z-index: 10;
+        }
+
+        .control-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
+            border: 4px solid #333;
+            font-size: 36px;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            touch-action: manipulation;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+            background: rgba(200, 200, 200, 0.8);
+        }
+
+        #gameOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        #gameOverlay.show {
+            display: flex;
+        }
+
+        .message {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 90%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .message h1 {
+            color: #FF6B6B;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .message p {
+            color: #333;
+            font-size: 20px;
+            line-height: 1.6;
+        }
+
+        .win {
+            color: #4CAF50 !important;
+        }
+
+        @media (max-width: 480px) {
+            #scoreboard {
+                font-size: 14px;
+                padding: 10px 15px;
+            }
+
+            .score {
+                font-size: 18px;
+            }
+
+            .control-btn {
+                width: 70px;
+                height: 70px;
+                font-size: 30px;
+            }
+
+            .message h1 {
+                font-size: 24px;
+            }
+
+            .message p {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <div id="court">
+            <div class="net"></div>
+            
+            <div id="scoreboard">
+                <div class="score-row">
+                    <span class="player-name">Jose: <span id="joseScore" class="score">0</span></span>
+                </div>
+                <div class="score-row">
+                    <span class="player-name">Palomos: <span id="opponentScore" class="score">0</span></span>
+                </div>
+            </div>
+
+            <div id="paloma" class="player">
+                <div class="player-label">Paloma</div>
+                <div class="player-body">
+                    <div class="head"></div>
+                    <div class="torso body-part"></div>
+                    <div class="arm left body-part"></div>
+                    <div class="arm right body-part"></div>
+                    <div class="leg left body-part"></div>
+                    <div class="leg right body-part"></div>
+                    <div class="racket"></div>
+                </div>
+            </div>
+
+            <div id="bharath" class="player">
+                <div class="player-label">Bharath</div>
+                <div class="player-body">
+                    <div class="head"></div>
+                    <div class="torso body-part"></div>
+                    <div class="arm left body-part"></div>
+                    <div class="arm right body-part"></div>
+                    <div class="leg left body-part"></div>
+                    <div class="leg right body-part"></div>
+                    <div class="racket"></div>
+                </div>
+            </div>
+
+            <div id="jose" class="player">
+                <div class="player-label">Jose</div>
+                <div class="player-body">
+                    <div class="head"></div>
+                    <div class="torso body-part"></div>
+                    <div class="arm left body-part"></div>
+                    <div class="arm right body-part"></div>
+                    <div class="leg left body-part"></div>
+                    <div class="leg right body-part"></div>
+                    <div class="racket"></div>
+                </div>
+            </div>
+
+            <div id="ball"></div>
+        </div>
+
+        <div id="controls">
+            <button class="control-btn" id="leftBtn">←</button>
+            <button class="control-btn" id="rightBtn">→</button>
+        </div>
+
+        <div id="gameOverlay">
+            <div class="message" id="message"></div>
+        </div>
+    </div>
+
+    <script>
+        const gameContainer = document.getElementById('gameContainer');
+        const jose = document.getElementById('jose');
+        const ball = document.getElementById('ball');
+        const paloma = document.getElementById('paloma');
+        const bharath = document.getElementById('bharath');
+        const leftBtn = document.getElementById('leftBtn');
+        const rightBtn = document.getElementById('rightBtn');
+        const gameOverlay = document.getElementById('gameOverlay');
+        const message = document.getElementById('message');
+        const joseScoreEl = document.getElementById('joseScore');
+        const opponentScoreEl = document.getElementById('opponentScore');
+
+        let joseX = 0;
+        let joseScore = 0;
+        let opponentScore = 0;
+        let ballX = 0;
+        let ballY = 0;
+        let ballSpeedX = 4;
+        let ballSpeedY = 4;
+        let gameActive = true;
+        let keys = {};
+
+        const JOSE_SPEED = 8;
+
+        function initGame() {
+            joseX = gameContainer.offsetWidth / 2 - 27.5;
+            jose.style.left = joseX + 'px';
+            resetBall();
+            gameLoop();
+        }
+
+        function resetBall() {
+            ballX = gameContainer.offsetWidth / 2 - 10;
+            ballY = gameContainer.offsetHeight / 2 - 10;
+            
+            const angle = (Math.random() * 60 - 30) * Math.PI / 180;
+            const speed = 4 + Math.random() * 2;
+            
+            ballSpeedX = Math.sin(angle) * speed;
+            ballSpeedY = Math.random() > 0.5 ? speed : -speed;
+        }
+
+        function updateBall() {
+            ballX += ballSpeedX;
+            ballY += ballSpeedY;
+
+            const courtWidth = gameContainer.offsetWidth;
+            const courtHeight = gameContainer.offsetHeight;
+            const netY = courtHeight / 2;
+
+            // Bounce on left/right walls
+            if (ballX <= 0 || ballX >= courtWidth - 20) {
+                ballSpeedX = -ballSpeedX;
+                ballX = Math.max(0, Math.min(courtWidth - 20, ballX));
+            }
+
+            // Score when ball hits top or bottom
+            if (ballY <= 0) {
+                joseScore++;
+                joseScoreEl.textContent = joseScore;
+                if (joseScore >= 10) {
+                    endGame(true);
+                    return;
+                }
+                resetBall();
+            } else if (ballY >= courtHeight - 20) {
+                opponentScore++;
+                opponentScoreEl.textContent = opponentScore;
+                if (opponentScore >= 10) {
+                    endGame(false);
+                    return;
+                }
+                resetBall();
+            }
+
+            // Jose collision
+            const joseY = courtHeight - 130;
+            if (ballY >= joseY - 20 && ballY <= joseY + 75 &&
+                ballX >= joseX - 10 && ballX <= joseX + 65 &&
+                ballSpeedY > 0) {
+                
+                ballSpeedY = -Math.abs(ballSpeedY) * 1.05;
+                const hitPosition = (ballX - joseX) / 55 - 0.5;
+                ballSpeedX += hitPosition * 3;
+            }
+
+            // Opponent collisions
+            const palomaX = parseFloat(paloma.style.left) || courtWidth * 0.30;
+            const bharathX = parseFloat(bharath.style.left) || courtWidth * 0.65;
+            
+            const opponents = [
+                { x: palomaX, y: 50 },
+                { x: bharathX, y: 50 }
+            ];
+
+            opponents.forEach(opp => {
+                if (ballY >= opp.y - 20 && ballY <= opp.y + 95 &&
+                    ballX >= opp.x - 10 && ballX <= opp.x + 65 &&
+                    ballSpeedY < 0) {
+                    
+                    ballSpeedY = Math.abs(ballSpeedY) * 1.05;
+                    const hitPosition = (ballX - opp.x) / 55 - 0.5;
+                    ballSpeedX += hitPosition * 2;
+                }
+            });
+
+            // Speed limiting
+            const maxSpeed = 8;
+            if (Math.abs(ballSpeedX) > maxSpeed) ballSpeedX = maxSpeed * Math.sign(ballSpeedX);
+            if (Math.abs(ballSpeedY) > maxSpeed) ballSpeedY = maxSpeed * Math.sign(ballSpeedY);
+
+            ball.style.left = ballX + 'px';
+            ball.style.top = ballY + 'px';
+        }
+
+        function updateJose() {
+            if (keys['ArrowLeft'] || keys['a']) {
+                joseX = Math.max(0, joseX - JOSE_SPEED);
+            }
+            if (keys['ArrowRight'] || keys['d']) {
+                joseX = Math.min(gameContainer.offsetWidth - 55, joseX + JOSE_SPEED);
+            }
+            jose.style.left = joseX + 'px';
+        }
+
+        function updateOpponents() {
+            const courtWidth = gameContainer.offsetWidth;
+            const midPoint = courtWidth / 2;
+            const ballCenterX = ballX + 10;
+
+            // Paloma
+            const palomaCurrentX = parseFloat(paloma.style.left) || courtWidth * 0.30;
+            let targetPalomaX;
+            
+            if (ballCenterX < midPoint && ballY < midPoint) {
+                targetPalomaX = Math.max(0, Math.min(ballX - 27.5, midPoint - 60));
+            } else {
+                targetPalomaX = midPoint * 0.4;
+            }
+            
+            const newPalomaX = palomaCurrentX + (targetPalomaX - palomaCurrentX) * 0.15;
+            paloma.style.left = newPalomaX + 'px';
+
+            // Bharath
+            const bharathCurrentX = parseFloat(bharath.style.left) || courtWidth * 0.65;
+            let targetBharathX;
+            
+            if (ballCenterX >= midPoint && ballY < midPoint) {
+                targetBharathX = Math.max(midPoint, Math.min(ballX - 27.5, courtWidth - 60));
+            } else {
+                targetBharathX = midPoint + (courtWidth - midPoint) * 0.4;
+            }
+            
+            const newBharathX = bharathCurrentX + (targetBharathX - bharathCurrentX) * 0.15;
+            bharath.style.left = newBharathX + 'px';
+        }
+
+        function endGame(joseWon) {
+            gameActive = false;
+            
+            if (joseWon) {
+                message.innerHTML = '<h1 class="win">🎉 Congratulations Jose! 🎉</h1><p>You won! Now please reach out to the Palomos for your gift!</p>';
+            } else {
+                message.innerHTML = '<h1>The Palomos Won! 😔</h1><p>Perhaps you need better gear to play better. Reach out to the Palomos!</p>';
+            }
+            
+            gameOverlay.classList.add('show');
+        }
+
+        function gameLoop() {
+            if (!gameActive) return;
+            
+            updateBall();
+            updateJose();
+            updateOpponents();
+            
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+        });
+
+        document.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+
+        // Touch controls
+        leftBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            keys['ArrowLeft'] = true;
+        });
+
+        leftBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            keys['ArrowLeft'] = false;
+        });
+
+        rightBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            keys['ArrowRight'] = true;
+        });
+
+        rightBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            keys['ArrowRight'] = false;
+        });
+
+        // Mouse controls
+        leftBtn.addEventListener('mousedown', () => {
+            keys['ArrowLeft'] = true;
+        });
+
+        leftBtn.addEventListener('mouseup', () => {
+            keys['ArrowLeft'] = false;
+        });
+
+        rightBtn.addEventListener('mousedown', () => {
+            keys['ArrowRight'] = true;
+        });
+
+        rightBtn.addEventListener('mouseup', () => {
+            keys['ArrowRight'] = false;
+        });
+
+        // Start game
+        window.addEventListener('load', initGame);
+    </script>
+</body>
+</html>
