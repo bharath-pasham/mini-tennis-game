@@ -455,7 +455,7 @@
             ballY = gameContainer.offsetHeight / 2 - 10;
             
             const angle = (Math.random() * 60 - 30) * Math.PI / 180;
-            const speed = 4 + Math.random() * 2;
+            const speed = 7 + Math.random() * 3;
             
             ballSpeedX = Math.sin(angle) * speed;
             ballSpeedY = Math.random() > 0.5 ? speed : -speed;
@@ -500,7 +500,7 @@
                 ballX >= joseX - 10 && ballX <= joseX + 65 &&
                 ballSpeedY > 0) {
                 
-                ballSpeedY = -Math.abs(ballSpeedY) * 1.05;
+                ballSpeedY = -Math.abs(ballSpeedY) * 1.1;
                 const hitPosition = (ballX - joseX) / 55 - 0.5;
                 ballSpeedX += hitPosition * 3;
             }
@@ -519,14 +519,14 @@
                     ballX >= opp.x - 10 && ballX <= opp.x + 65 &&
                     ballSpeedY < 0) {
                     
-                    ballSpeedY = Math.abs(ballSpeedY) * 1.05;
+                    ballSpeedY = Math.abs(ballSpeedY) * 1.1;
                     const hitPosition = (ballX - opp.x) / 55 - 0.5;
                     ballSpeedX += hitPosition * 2;
                 }
             });
 
             // Speed limiting
-            const maxSpeed = 8;
+            const maxSpeed = 12;
             if (Math.abs(ballSpeedX) > maxSpeed) ballSpeedX = maxSpeed * Math.sign(ballSpeedX);
             if (Math.abs(ballSpeedY) > maxSpeed) ballSpeedY = maxSpeed * Math.sign(ballSpeedY);
 
